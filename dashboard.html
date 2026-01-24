@@ -136,6 +136,15 @@
       background-color: #e68900;
     }
 
+    .btn-copy {
+      background-color: #9C27B0;
+      color: white;
+    }
+
+    .btn-copy:hover {
+      background-color: #7B1FA2;
+    }
+
     button:disabled {
       background-color: #ccc;
       cursor: not-allowed;
@@ -213,6 +222,9 @@
         </div>
 
         <div class="button-group">
+          <button class="btn-copy" id="copyImageBtn" disabled>
+            📋 画像をコピー
+          </button>
           <button class="btn-jpeg" id="saveJpegBtn" disabled>
             💾 JPEGで保存
           </button>

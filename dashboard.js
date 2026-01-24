@@ -7,6 +7,7 @@ let previewCtx = null;
 
 // DOM要素
 const includeUrlToggle = document.getElementById('includeUrlToggle');
+const copyImageBtn = document.getElementById('copyImageBtn');
 const saveJpegBtn = document.getElementById('saveJpegBtn');
 const savePdfBtn = document.getElementById('savePdfBtn');
 const saveBothBtn = document.getElementById('saveBothBtn');
@@ -21,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // イベントリスナーの設定
   includeUrlToggle.addEventListener('change', updatePreview);
+  copyImageBtn.addEventListener('click', () => copyToClipboard());
   saveJpegBtn.addEventListener('click', () => saveAsJpeg());
   savePdfBtn.addEventListener('click', () => saveAsPdf());
   saveBothBtn.addEventListener('click', () => saveBoth());
@@ -41,6 +43,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     updatePreview();
 
     // ボタンを有効化
+    copyImageBtn.disabled = false;
     saveJpegBtn.disabled = false;
     savePdfBtn.disabled = false;
     saveBothBtn.disabled = false;
@@ -134,6 +137,33 @@ function drawUrlHeader(ctx, url, width, height) {
   const timestamp = new Date().toLocaleString('ja-JP');
   ctx.font = '12px Arial, sans-serif';
   ctx.fillText(`キャプチャ日時: ${timestamp}`, padding, padding + 25);
+}
+
+// クリップボードにコピー
+async function copyToClipboard() {
+  if (!previewCanvas) return;
+
+  showStatus('画像をクリップボードにコピー中...', 'info');
+
+  try {
+    // canvasをBlobに変換
+    const blob = await new Promise(resolve => {
+      previewCanvas.toBlob(resolve, 'image/png');
+    });
+
+    // Clipboard APIを使用してコピー
+    await navigator.clipboard.write([
+      new ClipboardItem({
+        'image/png': blob
+      })
+    ]);
+
+    showStatus('画像をクリップボードにコピーしました！', 'success');
+    hideStatus();
+  } catch (error) {
+    console.error('クリップボードコピーエラー:', error);
+    showStatus('クリップボードへのコピーに失敗しました', 'error');
+  }
 }
 
 // JPEGとして保存
