@@ -10,7 +10,6 @@ const includeUrlToggle = document.getElementById('includeUrlToggle');
 const copyImageBtn = document.getElementById('copyImageBtn');
 const saveJpegBtn = document.getElementById('saveJpegBtn');
 const savePdfBtn = document.getElementById('savePdfBtn');
-const saveBothBtn = document.getElementById('saveBothBtn');
 const loadingMessage = document.getElementById('loadingMessage');
 const urlInfo = document.getElementById('urlInfo');
 const statusMessage = document.getElementById('statusMessage');
@@ -25,7 +24,6 @@ document.addEventListener('DOMContentLoaded', () => {
   copyImageBtn.addEventListener('click', () => copyToClipboard());
   saveJpegBtn.addEventListener('click', () => saveAsJpeg());
   savePdfBtn.addEventListener('click', () => saveAsPdf());
-  saveBothBtn.addEventListener('click', () => saveBoth());
 });
 
 // メッセージリスナー
@@ -46,7 +44,6 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     copyImageBtn.disabled = false;
     saveJpegBtn.disabled = false;
     savePdfBtn.disabled = false;
-    saveBothBtn.disabled = false;
   }
 });
 
@@ -132,11 +129,6 @@ function drawUrlHeader(ctx, url, width, height) {
   }
 
   ctx.fillText(displayText, padding, padding);
-
-  // タイムスタンプを追加
-  const timestamp = new Date().toLocaleString('ja-JP');
-  ctx.font = '12px Arial, sans-serif';
-  ctx.fillText(`キャプチャ日時: ${timestamp}`, padding, padding + 25);
 }
 
 // クリップボードにコピー
@@ -224,21 +216,6 @@ async function saveAsPdf() {
   } catch (error) {
     console.error('PDF保存エラー:', error);
     showStatus('PDFの保存に失敗しました', 'error');
-  }
-}
-
-// 両方の形式で保存
-async function saveBoth() {
-  showStatus('両方の形式で保存中...', 'info');
-
-  try {
-    await saveAsJpeg();
-    await new Promise(resolve => setTimeout(resolve, 500)); // 少し待機
-    await saveAsPdf();
-    showStatus('両方のファイルを保存しました', 'success');
-  } catch (error) {
-    console.error('保存エラー:', error);
-    showStatus('保存中にエラーが発生しました', 'error');
   }
 }
 
